@@ -1,0 +1,72 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flyer</title>
+
+<style>
+
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #1e3a8a;
+}
+
+.flyer-container {
+    position: relative;
+    width: 600px;
+}
+
+.flyer-container img.base {
+    width: 100%;
+    display: block;
+}
+
+.flyer-container .overlay {
+    position: absolute;
+    z-index: 2;
+    width: 140px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.flyer-container .insta {
+    bottom: 19px;
+    left: 15px;
+}
+
+.flyer-container .facebook {
+    bottom: 20px;
+    right: 300px;
+}
+
+.flyer-container .overlay:hover {
+    transform: scale(1.2);
+    filter: brightness(1.2) drop-shadow(0 0 10px rgba(255,255,255,0.6));
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="flyer-container">
+    
+    <img src="Images/flyer-background.png" alt="flyer" class="base">
+
+    <a href="https://www.instagram.com/showhouse.insta/">
+        <img src="Images/instagram.png" alt="insta.icon" class="overlay insta">
+    </a>    
+
+    <a href="https://www.facebook.com/profile.php?id=61578683642159">
+        <img src="Images/facebook.png" alt="facebook.icon" class="overlay facebook">
+    </a>  
+
+</div>
+
+</body>   
+</html>

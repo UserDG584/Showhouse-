@@ -748,7 +748,7 @@
 <script>
 // ── CONFIGURATION ──────────────────────────────────────────────
 // Replace with your deployed Google Apps Script Web App URL:
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzh7pDdkZxssxHdFSEmYcnlfvg-sdm7Aa6shud2A1obaSYPAs2qAUzY56ymlxbyx-jN1A/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyGONeGpI96Qg3mCNEJNZIb-kbsRWmdA0JNeoAhKxNp5_l0ZnYw7X_u4B80ZiP1lg9i/exec';
 
 // ── PROGRESS BAR ───────────────────────────────────────────────
 function updateProgress() {
@@ -900,61 +900,105 @@ function validateForm() {
 }
 
 // ── SUBMIT ─────────────────────────────────────────────────────
+// ── SUBMIT ─────────────────────────────────────────────────────
 document.getElementById('quoteForm').addEventListener('submit', async function(e) {
   e.preventDefault();
 
   if (!validateForm()) {
-    document.querySelector('.error, .field-error.show')?.scrollIntoView({behavior:'smooth', block:'center'});
+    document
+      .querySelector('.error, .field-error.show')
+      ?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
     return;
   }
 
   const btn = document.getElementById('submitBtn');
+
   btn.classList.add('loading');
+
   btn.innerHTML = `
-    <svg class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20">
+    <svg class="spinner"
+         viewBox="0 0 24 24"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="2.5"
+         width="20"
+         height="20">
       <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
     </svg>
-    Sending…`;
+    Sending...
+  `;
 
-  // Build payload
-  const get = id => document.getElementById(id)?.value?.trim() || '';
-  const radio = name => document.querySelector(`[name="${name}"]:checked`)?.value || '';
+  const get = id =>
+    document.getElementById(id)?.value?.trim() || '';
+
+  const radio = name =>
+    document.querySelector(`[name="${name}"]:checked`)?.value || '';
 
   const payload = {
-    Initials:       get('name'),
-    Phone:          get('phone'),
-    Email:          get('email'),
-    PostCode:       get('postcode').toUpperCase(),
-    FullAddress:    get('address'),
-    Style:          document.getElementById('propType').value,
-    'No.Windows':   get('numWindows'),
-    Size:           radio('windowSize'),
-    'Clean Type':   radio('cleanType'),
-    Floors:         get('numFloors'),
-    'Roof Wnds':    get('roofWindows'),
-    'Other Glass':  radio('otherGlass'),
+    Initials: get('name'),
+    Phone: get('phone'),
+    Email: get('email'),
+    PostCode: get('postcode').toUpperCase(),
+    FullAddress: get('address'),
+    Style: document.getElementById('propType').value,
+    'No.Windows': get('numWindows'),
+    Size: radio('windowSize'),
+    'Clean Type': radio('cleanType'),
+    Floors: get('numFloors'),
+    'Roof Wnds': get('roofWindows'),
+    'Other Glass': radio('otherGlass'),
     'Glass Detail': get('glassDesc'),
-    Access:         radio('access'),
-    Extras:         getExtrasValue(),
-    Prev:           get('lastCleaned'),
-    Frequency:      radio('frequency'),
+    Access: radio('access'),
+    Extras: getExtrasValue(),
+    Prev: get('lastCleaned'),
+    Frequency: radio('frequency')
   };
 
   try {
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-  } catch(err) {
-    console.warn('Submission note:', err);
-  }
 
-  // Show thank-you regardless (no-cors won't return readable response)
-  document.getElementById('thank-you').classList.add('show');
-  document.body.style.overflow = 'hidden';
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      throw new Error('Server returned an error');
+    }
+
+    document
+      .getElementById('thank-you')
+      .classList.add('show');
+
+    document.body.style.overflow = 'hidden';
+
+    document.getElementById('quoteForm').reset();
+
+  } catch (err) {
+
+    console.error(err);
+
+    alert(
+      'Sorry, there was a problem sending your quote request. Please try again.'
+    );
+
+  } finally {
+
+    btn.classList.remove('loading');
+
+    btn.innerHTML = `
+      <svg viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="2.5">
+        <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/>
+      </svg>
+      Submit & Get My Quote
+    `;
+  }
 });
-</script>
-</body>
-</html>
